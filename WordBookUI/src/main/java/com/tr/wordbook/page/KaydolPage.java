@@ -4,9 +4,10 @@ import com.tr.wordbook.domain.Kullanici;
 import com.tr.wordbook.service.Md5Service;
 import com.tr.wordbook.service.entityservice.KullaniciEntityService;
 import com.tr.wordbook.standart.MyVerticalLayout;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -33,7 +34,6 @@ public class KaydolPage extends VerticalLayout {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         initFieldsPanel();
-        initKaydetPanel();
     }
 
 
@@ -64,19 +64,6 @@ public class KaydolPage extends VerticalLayout {
         sifreTekrarField.setDescription("En az 8 karakter olmalıdır.");
         layout1.addComponent(sifreTekrarField);
 
-        addComponent(layout1);
-
-    }
-
-    private void initKaydetPanel(){
-
-        HorizontalLayout layout1 = new HorizontalLayout();
-        layout1.setSpacing(true);
-
-        Label bosLabel = new Label();
-        bosLabel.setCaption(null);
-        layout1.addComponent(bosLabel);
-
         Button buttonKaydet = new Button();
         buttonKaydet.setCaption("Kaydol");
         buttonKaydet.addClickListener(new Button.ClickListener() {
@@ -88,6 +75,7 @@ public class KaydolPage extends VerticalLayout {
         layout1.addComponent(buttonKaydet);
 
         addComponent(layout1);
+
     }
 
     private void kaydol(){
