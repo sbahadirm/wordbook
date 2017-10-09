@@ -122,6 +122,7 @@ public class KelimeEklePage extends HorizontalLayout {
 
         Button sil = new Button();
         sil.setCaption("Sil");
+        sil.addStyleName(ValoTheme.BUTTON_PRIMARY);
         sil.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {

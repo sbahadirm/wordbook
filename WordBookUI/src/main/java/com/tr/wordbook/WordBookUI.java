@@ -178,6 +178,7 @@ public class WordBookUI extends UI {
         navigationLayout.setHeight("50px");
 
         homePageButton = new Button();
+        homePageButton.setIcon(FontAwesome.HOME);
         homePageButton.setCaption("Anasayfa");
         homePageButton.setWidth("100%");
         homePageButton.setHeight("100%");
@@ -192,6 +193,7 @@ public class WordBookUI extends UI {
         navigationLayout.addComponent(homePageButton);
 
         kelimeEkleButton = new Button();
+        kelimeEkleButton.setIcon(FontAwesome.PLUS);
         kelimeEkleButton.setCaption("Kelime Ekle");
         kelimeEkleButton.setWidth("100%");
         kelimeEkleButton.setHeight("100%");
@@ -206,6 +208,7 @@ public class WordBookUI extends UI {
         navigationLayout.addComponent(kelimeEkleButton);
 
         Button calisButton = new Button();
+        calisButton.setIcon(FontAwesome.PENCIL_SQUARE_O);
         calisButton.setCaption("Çalış");
         calisButton.setWidth("100%");
         calisButton.setHeight("100%");
@@ -220,12 +223,22 @@ public class WordBookUI extends UI {
         navigationLayout.addComponent(calisButton);
 
         Button raporlaButton = new Button();
+        raporlaButton.setIcon(FontAwesome.PIE_CHART);
         raporlaButton.setCaption("Rapor");
         raporlaButton.setWidth("100%");
         raporlaButton.setHeight("100%");
         raporlaButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         raporlaButton.addStyleName(ValoTheme.BUTTON_HUGE);
         navigationLayout.addComponent(raporlaButton);
+
+        Button ayarlarButton = new Button();
+        ayarlarButton.setIcon(FontAwesome.WRENCH);
+        ayarlarButton.setCaption("Ayarlar");
+        ayarlarButton.setWidth("100%");
+        ayarlarButton.setHeight("100%");
+        ayarlarButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        ayarlarButton.addStyleName(ValoTheme.BUTTON_HUGE);
+        navigationLayout.addComponent(ayarlarButton);
 
         navigationLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         navigationLayout.setHeight("80px");
@@ -296,8 +309,15 @@ public class WordBookUI extends UI {
     public void ekraniTemizle(){
 
         mainLayout.removeAllComponents();
-        mainLayout.addComponent(headerLayout);
-        mainLayout.addComponent(navigationLayout);
+        if (isKullaniciLogin){
+
+            mainLayout.addComponent(headerLayout);
+            mainLayout.addComponent(navigationLayout);
+        } else {
+            setupLayout();
+            addHeader();
+            addLoginLayout();
+        }
 
     }
 }
