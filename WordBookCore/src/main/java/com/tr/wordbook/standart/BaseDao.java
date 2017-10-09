@@ -1,4 +1,4 @@
-package com.tr.wordbook.dao;
+package com.tr.wordbook.standart;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

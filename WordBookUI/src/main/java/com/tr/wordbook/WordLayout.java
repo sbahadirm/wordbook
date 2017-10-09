@@ -19,7 +19,7 @@ public class WordLayout extends HorizontalLayout {
         TextField textField = new TextField();
         textField.addStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
         textField.setWidth("80%");
-        textField.setValue(word.getText());
+        textField.setValue(word.getTurkce());
         addComponent(textField);
 
     }

@@ -1,6 +1,5 @@
-package com.tr.wordbook.service;
+package com.tr.wordbook.standart;
 
-import com.tr.wordbook.dao.BaseDao;
 import org.hibernate.criterion.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

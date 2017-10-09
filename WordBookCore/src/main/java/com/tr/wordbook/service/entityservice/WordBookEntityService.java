@@ -1,7 +1,9 @@
-package com.tr.wordbook.service;
+package com.tr.wordbook.service.entityservice;
 
 import com.tr.wordbook.dao.WordBookDao;
 import com.tr.wordbook.domain.Word;
+import com.tr.wordbook.enums.EnumSecimEH;
+import com.tr.wordbook.standart.BaseEntityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,4 +29,15 @@ public class WordBookEntityService extends BaseEntityService<Word, WordBookDao> 
         return getDao().findAllWordByText(text);
     }
 
+    public List<Word> findAllWord(){
+        return getDao().findAllWord();
+    }
+
+    public List<Word> findAllWordByEzberlendi(EnumSecimEH ezberlendi){
+        return getDao().findAllWordByEzberlendi(ezberlendi);
+    }
+
+    public List<Word> findAllWordByNotEzberlendi(EnumSecimEH ezberlendi){
+        return getDao().findAllWordByNotEzberlendi(ezberlendi);
+    }
 }
