@@ -100,7 +100,7 @@ public class KelimePage extends VerticalLayout {
 
     private void turkcesiniGetir() {
         ilerleButton.setIcon(FontAwesome.THUMBS_UP);
-        kelimeField.setValue(selectedKelime.getTurkce());
+        kelimeField.setValue(selectedKelime.getTurkce().toUpperCase());
     }
 
 //    private void ileri(){
@@ -142,12 +142,7 @@ public class KelimePage extends VerticalLayout {
             Notification.show("Tüm kelimeler ezberlenmiştir!", Notification.Type.ERROR_MESSAGE);
         }
 
-        kelimeField.setValue(selectedKelime.getIngilizce());
-    }
-
-
-    public Label getKelimeField() {
-        return kelimeField;
+        kelimeField.setValue(selectedKelime.getIngilizce().toUpperCase());
     }
 
 }
