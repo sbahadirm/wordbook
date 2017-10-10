@@ -1,5 +1,6 @@
 package com.tr.wordbook.page;
 
+import com.tr.wordbook.WordBookUI;
 import com.tr.wordbook.domain.Word;
 import com.tr.wordbook.enums.EnumSecimEH;
 import com.tr.wordbook.enums.EnumZorlukDerece;
@@ -22,8 +23,7 @@ import java.util.Set;
 @Configurable
 public class KelimeEklePage extends HorizontalLayout {
 
-    @Autowired
-    WordBookEntityService wordBookEntityService;
+    private WordBookEntityService wordBookEntityService;
 
     private TextField turkceField;
     private TextField ingilizceField;
@@ -36,8 +36,8 @@ public class KelimeEklePage extends HorizontalLayout {
 
     public KelimeEklePage(){
         super();
-        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
+        wordBookEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(WordBookEntityService.class);
         setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         initListePanel();
         initFieldsPanel();
@@ -46,7 +46,7 @@ public class KelimeEklePage extends HorizontalLayout {
 
     public KelimeEklePage(List<Word> allWord){
         super();
-        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        wordBookEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(WordBookEntityService.class);
 
         this.kelimeList = allWord;
         initListePanel();

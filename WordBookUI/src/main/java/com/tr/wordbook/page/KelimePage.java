@@ -1,5 +1,6 @@
 package com.tr.wordbook.page;
 
+import com.tr.wordbook.WordBookUI;
 import com.tr.wordbook.domain.Word;
 import com.tr.wordbook.enums.EnumSecimEH;
 import com.tr.wordbook.service.entityservice.WordBookEntityService;
@@ -9,6 +10,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,10 +20,6 @@ import java.util.List;
 @Configurable
 public class KelimePage extends VerticalLayout {
 
-    @Autowired
-    WordBookEntityService wordBookEntityService;
-
-
     private Label kelimeField;
 //    private Button ileriButton;
 //    private Button geriButton;
@@ -29,9 +27,11 @@ public class KelimePage extends VerticalLayout {
 
     private Word selectedKelime;
     private List<Word> allKelimeList;
+    private WordBookEntityService wordBookEntityService;
 
     public KelimePage(){
         super();
+        wordBookEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(WordBookEntityService.class);
         initFieldsPanel();
         allKelimeList = wordBookEntityService.findAllWordByNotEzberlendi(EnumSecimEH.EVET);
         getNextKelime();
@@ -40,9 +40,14 @@ public class KelimePage extends VerticalLayout {
 
     public KelimePage(List<Word> allKelimeList){
         super();
+        wordBookEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(WordBookEntityService.class);
         setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         initFieldsPanel();
-        this.allKelimeList = allKelimeList;
+        if (allKelimeList != null){
+            this.allKelimeList = allKelimeList;
+        } else {
+            this.allKelimeList = new ArrayList<>();
+        }
 
         getNextKelime();
     }
@@ -138,11 +143,10 @@ public class KelimePage extends VerticalLayout {
 
         if (!allKelimeList.isEmpty()){
             selectedKelime = allKelimeList.get(0);
+            kelimeField.setValue(selectedKelime.getIngilizce().toUpperCase());
         } else {
             Notification.show("Tüm kelimeler ezberlenmiştir!", Notification.Type.ERROR_MESSAGE);
         }
-
-        kelimeField.setValue(selectedKelime.getIngilizce().toUpperCase());
     }
 
 }

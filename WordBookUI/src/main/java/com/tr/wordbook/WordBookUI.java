@@ -320,4 +320,8 @@ public class WordBookUI extends UI {
         }
 
     }
+
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
 }

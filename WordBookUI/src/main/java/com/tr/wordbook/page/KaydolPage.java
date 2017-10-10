@@ -1,13 +1,12 @@
 package com.tr.wordbook.page;
 
+import com.tr.wordbook.WordBookUI;
 import com.tr.wordbook.domain.Kullanici;
 import com.tr.wordbook.service.Md5Service;
 import com.tr.wordbook.service.entityservice.KullaniciEntityService;
+import com.tr.wordbook.service.entityservice.WordBookEntityService;
 import com.tr.wordbook.standart.MyVerticalLayout;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -19,9 +18,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 @Configurable
 public class KaydolPage extends VerticalLayout {
 
-    @Autowired
-    KullaniciEntityService kullaniciEntityService;
-
+    private KullaniciEntityService kullaniciEntityService;
     private TextField adiField;
     private TextField soyadiField;
     private TextField kullaniciAdiField;
@@ -31,6 +28,7 @@ public class KaydolPage extends VerticalLayout {
 
     public KaydolPage(){
         super();
+        kullaniciEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KullaniciEntityService.class);
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         initFieldsPanel();
