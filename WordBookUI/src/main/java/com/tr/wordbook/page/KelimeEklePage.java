@@ -63,15 +63,15 @@ public class KelimeEklePage extends HorizontalLayout {
         fieldsPanelLayaot.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         fieldsPanel.setContent(fieldsPanelLayaot);
 
-        turkceField = new TextField();
-        turkceField.setCaption("Türkçe");
-        turkceField.setWidth("100%");
-        fieldsPanelLayaot.addComponent(turkceField);
-
         ingilizceField = new TextField();
         ingilizceField.setCaption("İngilizce");
         ingilizceField.setWidth("100%");
         fieldsPanelLayaot.addComponent(ingilizceField);
+
+        turkceField = new TextField();
+        turkceField.setCaption("Türkçe");
+        turkceField.setWidth("100%");
+        fieldsPanelLayaot.addComponent(turkceField);
 
         ezberlendiField = new EnumSecimEHComboField();
         ezberlendiField.setCaption("Ezberlendi");
@@ -135,7 +135,6 @@ public class KelimeEklePage extends HorizontalLayout {
     }
 
     private void sil(){
-
     }
 
     private void kaydet(){
@@ -150,7 +149,9 @@ public class KelimeEklePage extends HorizontalLayout {
 
             kelime = wordBookEntityService.save(kelime);
 
-            Notification.show("Şifreler uyumsuz!", Notification.Type.ERROR_MESSAGE);
+            Notification.show("Kaydedildi!", Notification.Type.HUMANIZED_MESSAGE);
+            turkceField.setValue("");
+            ingilizceField.setValue("");
         }
 
         fillList();
