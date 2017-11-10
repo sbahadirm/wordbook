@@ -46,10 +46,10 @@ public class WordBookUI extends UI {
     private TextField usernameField;
     private PasswordField passwordField;
 
-    private String username;
-    private String password;
+    private static String username;
+    private static String password;
 
-    private boolean isKullaniciLogin;
+    private static boolean isKullaniciLogin;
 
     private Button kelimeEkleButton;
     private Button homePageButton;
