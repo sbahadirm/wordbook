@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
  * @since 0.0.1
  */
 @Entity
-@Table(name = "KELIME")
+@Table(name = "KATEGORI")
 public class Kategori extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
