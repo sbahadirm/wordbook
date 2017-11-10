@@ -4,10 +4,8 @@ import com.tr.wordbook.WordBookUI;
 import com.tr.wordbook.domain.Kullanici;
 import com.tr.wordbook.service.Md5Service;
 import com.tr.wordbook.service.entityservice.KullaniciEntityService;
-import com.tr.wordbook.service.entityservice.WordBookEntityService;
 import com.tr.wordbook.standart.MyVerticalLayout;
 import com.vaadin.ui.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 

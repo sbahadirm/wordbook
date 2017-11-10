@@ -1,16 +1,19 @@
 package com.tr.wordbook.page;
 
 import com.tr.wordbook.WordBookUI;
-import com.tr.wordbook.domain.Word;
+import com.tr.wordbook.domain.Kelime;
+import com.tr.wordbook.domain.KelimeKullanici;
+import com.tr.wordbook.domain.Kullanici;
 import com.tr.wordbook.enums.EnumSecimEH;
 import com.tr.wordbook.enums.EnumZorlukDerece;
-import com.tr.wordbook.service.entityservice.WordBookEntityService;
+import com.tr.wordbook.field.EnumSecimEHComboField;
+import com.tr.wordbook.field.EnumZorlukDereceComboField;
+import com.tr.wordbook.service.entityservice.KelimeEntityService;
+import com.tr.wordbook.service.entityservice.KelimeKullaniciEntityService;
 import com.vaadin.event.ContextClickEvent;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +26,8 @@ import java.util.Set;
 @Configurable
 public class KelimeEklePage extends HorizontalLayout {
 
-    private WordBookEntityService wordBookEntityService;
+    private KelimeEntityService kelimeEntityService;
+    private KelimeKullaniciEntityService kelimeKullaniciEntityService;
 
     private TextField turkceField;
     private TextField ingilizceField;
@@ -32,23 +36,25 @@ public class KelimeEklePage extends HorizontalLayout {
     private Button kaydetButton;
 
     private ListSelect<String> listSelectField;
-    private List<Word> kelimeList;
+    private List<KelimeKullanici> kelimeKullaniciList;
 
     public KelimeEklePage(){
         super();
 
-        wordBookEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(WordBookEntityService.class);
+        kelimeKullaniciEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KelimeKullaniciEntityService.class);
+        kelimeEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KelimeEntityService.class);
         setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         initListePanel();
         initFieldsPanel();
         fillList();
     }
 
-    public KelimeEklePage(List<Word> allWord){
+    public KelimeEklePage(List<KelimeKullanici> allKelimeKullanici){
         super();
-        wordBookEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(WordBookEntityService.class);
+        kelimeKullaniciEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KelimeKullaniciEntityService.class);
+        kelimeEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KelimeEntityService.class);
 
-        this.kelimeList = allWord;
+        this.kelimeKullaniciList = allKelimeKullanici;
         initListePanel();
         initFieldsPanel();
         fillList();
@@ -139,15 +145,22 @@ public class KelimeEklePage extends HorizontalLayout {
 
     private void kaydet(){
 
-        if (wordBookEntityService != null){
+        if (kelimeKullaniciEntityService != null){
 
-            Word kelime = new Word();
+            Kullanici kullanici = WordBookUI.getKullanici();
+
+            Kelime kelime = new Kelime();
             kelime.setTurkce(turkceField.getValue());
             kelime.setIngilizce(ingilizceField.getValue());
-            kelime.setEzberlendi((EnumSecimEH) ezberlendiField.getValue());
-            kelime.setZorlukDerece((EnumZorlukDerece) zorlukDereceField.getValue());
+            kelime = kelimeEntityService.save(kelime);
 
-            kelime = wordBookEntityService.save(kelime);
+            KelimeKullanici kelimeKullanici = new KelimeKullanici();
+            kelimeKullanici.setEzberlendi((EnumSecimEH) ezberlendiField.getValue());
+            kelimeKullanici.setZorlukDerece((EnumZorlukDerece) zorlukDereceField.getValue());
+            kelimeKullanici.setKelime(kelime);
+            kelimeKullanici.setKullanici(kullanici);
+
+            kelimeKullanici = kelimeKullaniciEntityService.save(kelimeKullanici);
 
             Notification.show("Kaydedildi!", Notification.Type.HUMANIZED_MESSAGE);
             turkceField.setValue("");
@@ -158,17 +171,17 @@ public class KelimeEklePage extends HorizontalLayout {
     }
 
     private void fillList() {
-        if (wordBookEntityService != null){
-            kelimeList = wordBookEntityService.findAllWord();
+
+        if (kelimeKullaniciEntityService != null){
+            Kullanici kullanici = WordBookUI.getKullanici();
+            kelimeKullaniciList = kelimeKullaniciEntityService.findAllKelimeKullaniciByKullanici(kullanici);
         }
 
         List<String> stringList = new ArrayList<>();
-        for (Word kelime : kelimeList) {
-            stringList.add(kelime.getIngilizce() + " - " + kelime.getTurkce());
+        for (KelimeKullanici kelimeKullanici : kelimeKullaniciList) {
+            stringList.add(kelimeKullanici.getKelime().getIngilizce() + " - " + kelimeKullanici.getKelime().getTurkce());
         }
 
         listSelectField.setItems(stringList);
-
     }
-
 }

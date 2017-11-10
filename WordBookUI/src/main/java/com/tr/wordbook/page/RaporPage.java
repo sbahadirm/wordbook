@@ -2,11 +2,8 @@ package com.tr.wordbook.page;
 
 import com.tr.wordbook.WordBookUI;
 import com.tr.wordbook.domain.Kelime;
-import com.tr.wordbook.domain.KelimeKullanici;
-import com.tr.wordbook.domain.Kullanici;
 import com.tr.wordbook.enums.EnumSecimEH;
 import com.tr.wordbook.service.entityservice.KelimeEntityService;
-import com.tr.wordbook.service.entityservice.KelimeKullaniciEntityService;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -20,37 +17,35 @@ import java.util.List;
  * @since 0.0.1
  */
 @Configurable
-public class KelimePage extends VerticalLayout {
+public class RaporPage extends VerticalLayout {
 
     private Label kelimeField;
 //    private Button ileriButton;
 //    private Button geriButton;
     private Button ilerleButton;
 
-    private KelimeKullanici selectedKelimeKullanici;
-    private List<KelimeKullanici> allKelimeKullaniciList;
-    private KelimeKullaniciEntityService kelimeKullaniciEntityService;
+    private Kelime selectedKelime;
+    private List<Kelime> allKelimeList;
+    private KelimeEntityService wordBookEntityService;
 
-    public KelimePage(){
+    public RaporPage(){
         super();
-
-        Kullanici kullanici = WordBookUI.getKullanici();
-
-        kelimeKullaniciEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KelimeKullaniciEntityService.class);
+        wordBookEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KelimeEntityService.class);
         initFieldsPanel();
-        allKelimeKullaniciList = kelimeKullaniciEntityService.findAllKelimeKullaniciByNotEzberlendiAndKullanici(EnumSecimEH.EVET, kullanici);
+        allKelimeList = wordBookEntityService.findAllWordByNotEzberlendi(EnumSecimEH.EVET);
         getNextKelime();
+
     }
 
-    public KelimePage(List<KelimeKullanici> allKelimeKullaniciList){
+    public RaporPage(List<Kelime> allKelimeList){
         super();
-        kelimeKullaniciEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KelimeKullaniciEntityService.class);
+        wordBookEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KelimeEntityService.class);
         setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         initFieldsPanel();
-        if (allKelimeKullaniciList != null){
-            this.allKelimeKullaniciList = allKelimeKullaniciList;
+        if (allKelimeList != null){
+            this.allKelimeList = allKelimeList;
         } else {
-            this.allKelimeKullaniciList = new ArrayList<>();
+            this.allKelimeList = new ArrayList<>();
         }
 
         getNextKelime();
@@ -88,28 +83,15 @@ public class KelimePage extends VerticalLayout {
     private void ilerle(){
 
         if (FontAwesome.THUMBS_UP.equals(ilerleButton.getIcon())){
-            ezberlendi();
+//            ezberlendi();
         } else {
             turkcesiniGetir();
         }
     }
 
-    private void ezberlendi() {
-        ilerleButton.setIcon(FontAwesome.HAND_O_RIGHT);
-
-        selectedKelimeKullanici.setEzberlendi(EnumSecimEH.EVET);
-        if (kelimeKullaniciEntityService != null){
-            selectedKelimeKullanici = kelimeKullaniciEntityService.save(selectedKelimeKullanici);
-        }
-
-        allKelimeKullaniciList.remove(selectedKelimeKullanici);
-
-        getNextKelime();
-    }
-
     private void turkcesiniGetir() {
         ilerleButton.setIcon(FontAwesome.THUMBS_UP);
-        kelimeField.setValue(selectedKelimeKullanici.getKelime().getTurkce().toUpperCase());
+        kelimeField.setValue(selectedKelime.getTurkce().toUpperCase());
     }
 
 //    private void ileri(){
@@ -145,9 +127,9 @@ public class KelimePage extends VerticalLayout {
 
     private void getNextKelime(){
 
-        if (!allKelimeKullaniciList.isEmpty()){
-            selectedKelimeKullanici = allKelimeKullaniciList.get(0);
-            kelimeField.setValue(selectedKelimeKullanici.getKelime().getIngilizce().toUpperCase());
+        if (!allKelimeList.isEmpty()){
+            selectedKelime = allKelimeList.get(0);
+            kelimeField.setValue(selectedKelime.getIngilizce().toUpperCase());
         } else {
             Notification.show("Tüm kelimeler ezberlenmiştir!", Notification.Type.ERROR_MESSAGE);
         }

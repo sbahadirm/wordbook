@@ -8,24 +8,16 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 /**
- * @author Koray PEKER
+ * @author Bahadır Memiş
  * @since 0.0.1
  */
 @Entity
-@Table(name = "KELIME")
-public class Word extends BaseEntity {
+@Table(name = "KELIME_KULLANICI")
+public class KelimeKullanici extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    @Size(max = 50)
-    @Column(length = 50)
-    private String turkce;
-
-    @Size(max = 50)
-    @Column(length = 50)
-    private String ingilizce;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 30)
@@ -35,32 +27,18 @@ public class Word extends BaseEntity {
     @Column(length = 30)
     private EnumSecimEH ezberlendi;
 
-    public Word(){
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_KULLANICI")
+    @org.hibernate.annotations.ForeignKey(name = "FK_KELIME_KULLANICI_KELIME")
+    public Kullanici kullanici;
 
-    }
-
-    public Word(String text){
-        this.turkce = text;
-    }
-
-    public String getTurkce() {
-        return turkce;
-    }
-
-    public void setTurkce(String turkce) {
-        this.turkce = turkce;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_KELIME")
+    @org.hibernate.annotations.ForeignKey(name = "FK_KELIME_KULLANICI_KULLANICI")
+    public Kelime kelime;
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getIngilizce() {
-        return ingilizce;
-    }
-
-    public void setIngilizce(String ingilizce) {
-        this.ingilizce = ingilizce;
     }
 
     public EnumZorlukDerece getZorlukDerece() {
@@ -77,6 +55,22 @@ public class Word extends BaseEntity {
 
     public void setEzberlendi(EnumSecimEH ezberlendi) {
         this.ezberlendi = ezberlendi;
+    }
+
+    public Kullanici getKullanici() {
+        return kullanici;
+    }
+
+    public void setKullanici(Kullanici kullanici) {
+        this.kullanici = kullanici;
+    }
+
+    public Kelime getKelime() {
+        return kelime;
+    }
+
+    public void setKelime(Kelime kelime) {
+        this.kelime = kelime;
     }
 
     @Override

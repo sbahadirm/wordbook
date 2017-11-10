@@ -1,7 +1,7 @@
 package com.tr.wordbook;
 
-import com.tr.wordbook.domain.Word;
-import com.tr.wordbook.service.entityservice.WordBookEntityService;
+import com.tr.wordbook.domain.Kelime;
+import com.tr.wordbook.service.entityservice.KelimeEntityService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,12 +20,12 @@ import java.util.List;
 public class WordBookDaoIT {
 
     @Autowired
-    WordBookEntityService wordBookEntityService;
+    KelimeEntityService wordBookEntityService;
 
     @Test
     public void test_findAll(){
-        List<Word> wordList = wordBookEntityService.findAll();
-        Assert.assertFalse(wordList.isEmpty());
+        List<Kelime> kelimeList = wordBookEntityService.findAll();
+        Assert.assertFalse(kelimeList.isEmpty());
     }
 
 }

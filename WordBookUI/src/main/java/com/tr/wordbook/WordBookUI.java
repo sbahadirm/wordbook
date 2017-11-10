@@ -1,13 +1,13 @@
 package com.tr.wordbook;
 
 import com.tr.wordbook.domain.Kullanici;
-import com.tr.wordbook.domain.Word;
 import com.tr.wordbook.enums.EnumSecimEH;
+import com.tr.wordbook.page.ArkadaslarPage;
 import com.tr.wordbook.page.KaydolPage;
 import com.tr.wordbook.page.KelimeEklePage;
 import com.tr.wordbook.page.KelimePage;
 import com.tr.wordbook.service.entityservice.KullaniciEntityService;
-import com.tr.wordbook.service.entityservice.WordBookEntityService;
+import com.tr.wordbook.service.entityservice.KelimeEntityService;
 import com.vaadin.annotations.Theme;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.server.FontAwesome;
@@ -30,7 +30,7 @@ public class WordBookUI extends UI {
     private ApplicationContext applicationContext;
 
     @Autowired
-    private WordBookEntityService wordBookEntityService;
+    private KelimeEntityService wordBookEntityService;
 
     @Autowired
     KullaniciEntityService kullaniciEntityService;
@@ -46,10 +46,7 @@ public class WordBookUI extends UI {
     private TextField usernameField;
     private PasswordField passwordField;
 
-    private static String username;
-    private static String password;
-
-    private static boolean isKullaniciLogin;
+    private static Kullanici kullanici;
 
     private Button kelimeEkleButton;
     private Button homePageButton;
@@ -60,7 +57,7 @@ public class WordBookUI extends UI {
         setupLayout();
         addHeader();
 
-        if (isKullaniciLogin){
+        if (kullanici != null){
 
             addButtons();
 
@@ -132,14 +129,13 @@ public class WordBookUI extends UI {
 
     private void girisYap() {
 
-        Kullanici kullanici = kullaniciEntityService.findKullaniciByKullaniciAdiAndSifre(usernameField.getValue(), passwordField.getValue());
+        if (kullanici == null){
+            if (usernameField.getValue() != null && passwordField.getValue() != null){
+                kullanici = kullaniciEntityService.findKullaniciByKullaniciAdiAndSifre(usernameField.getValue(), passwordField.getValue());
+            }
+        }
 
         if (kullanici != null){
-
-            username = usernameField.getValue();
-            password = passwordField.getValue();
-            isKullaniciLogin = true;
-
             mainLayout.removeAllComponents();
             addHeader();
             addButtons();
@@ -231,14 +227,20 @@ public class WordBookUI extends UI {
         raporlaButton.addStyleName(ValoTheme.BUTTON_HUGE);
         navigationLayout.addComponent(raporlaButton);
 
-        Button ayarlarButton = new Button();
-        ayarlarButton.setIcon(FontAwesome.WRENCH);
-        ayarlarButton.setCaption("Ayarlar");
-        ayarlarButton.setWidth("100%");
-        ayarlarButton.setHeight("100%");
-        ayarlarButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        ayarlarButton.addStyleName(ValoTheme.BUTTON_HUGE);
-        navigationLayout.addComponent(ayarlarButton);
+        Button arkadaslarButton = new Button();
+        arkadaslarButton.setIcon(FontAwesome.USERS);
+        arkadaslarButton.setCaption("Arkadaşlar");
+        arkadaslarButton.setWidth("100%");
+        arkadaslarButton.setHeight("100%");
+        arkadaslarButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        arkadaslarButton.addStyleName(ValoTheme.BUTTON_HUGE);
+        arkadaslarButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                openArkadaslarPage();
+            }
+        });
+        navigationLayout.addComponent(arkadaslarButton);
 
         navigationLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         navigationLayout.setHeight("80px");
@@ -246,9 +248,21 @@ public class WordBookUI extends UI {
         mainLayout.addComponent(navigationLayout);
     }
 
+    private void openArkadaslarPage() {
+
+        ArkadaslarPage arkadaslarPage = new ArkadaslarPage();
+        arkadaslarPage.setWidth("100%");
+
+        mainLayout.removeAllComponents();
+
+        mainLayout.addComponent(headerLayout);
+        mainLayout.addComponent(navigationLayout);
+        mainLayout.addComponent(arkadaslarPage);
+    }
+
     private void kelimeEkle() {
 
-        KelimeEklePage kelimeEklePage = new KelimeEklePage(wordBookEntityService.findAllWord());
+        KelimeEklePage kelimeEklePage = new KelimeEklePage();
         kelimeEklePage.setWidth("100%");
 
         mainLayout.removeAllComponents();
@@ -261,7 +275,7 @@ public class WordBookUI extends UI {
 
     private void calis(){
 
-        KelimePage kelimePage = new KelimePage(wordBookEntityService.findAllWordByNotEzberlendi(EnumSecimEH.EVET));
+        KelimePage kelimePage = new KelimePage();
         mainLayout.removeAllComponents();
 
         mainLayout.addComponent(headerLayout);
@@ -269,47 +283,10 @@ public class WordBookUI extends UI {
         mainLayout.addComponent(kelimePage);
     }
 
-    private void addForm() {
-
-        contentLayout = new HorizontalLayout();
-        contentLayout.setSpacing(true);
-        contentLayout.setWidth("80%");
-
-        TextField textField = new TextField();
-        textField.setWidth("80%");
-
-        Button button = new Button("");
-        button.setIcon(FontAwesome.PLUS);
-        button.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-
-                String text = textField.getValue();
-                Word newWord = new Word(text);
-                newWord = wordBookEntityService.save(newWord);
-                Notification.show("Kelime eklendi.", Notification.Type.HUMANIZED_MESSAGE);
-
-                textField.clear();
-                textField.focus();
-
-                ekraniTemizle();
-            }
-        });
-        button.addStyleName(ValoTheme.BUTTON_PRIMARY);
-
-        contentLayout.addComponents(textField, button);
-        contentLayout.setExpandRatio(textField, 1);
-        mainLayout.addComponent(contentLayout);
-
-        lytWordList.setWidth("80%");
-        mainLayout.addComponent(lytWordList);
-
-    }
-
     public void ekraniTemizle(){
 
         mainLayout.removeAllComponents();
-        if (isKullaniciLogin){
+        if (kullanici != null){
 
             mainLayout.addComponent(headerLayout);
             mainLayout.addComponent(navigationLayout);
@@ -323,5 +300,9 @@ public class WordBookUI extends UI {
 
     public ApplicationContext getApplicationContext() {
         return applicationContext;
+    }
+
+    public static Kullanici getKullanici(){
+        return kullanici;
     }
 }

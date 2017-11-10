@@ -1,18 +1,14 @@
 package com.tr.wordbook.dao;
 
 import com.tr.wordbook.domain.Kullanici;
-import com.tr.wordbook.domain.Word;
 import com.tr.wordbook.service.Md5Service;
 import com.tr.wordbook.standart.BaseDao;
 import org.hibernate.Criteria;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 /**
- * @author Koray PEKER
+ * @author Bahad?r Memi?
  * @since 0.0.1
  */
 @Repository

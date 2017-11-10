@@ -1,4 +1,4 @@
-package com.tr.wordbook.page;
+package com.tr.wordbook.field;
 
 import com.tr.wordbook.enums.EnumZorlukDerece;
 import com.vaadin.ui.ComboBox;

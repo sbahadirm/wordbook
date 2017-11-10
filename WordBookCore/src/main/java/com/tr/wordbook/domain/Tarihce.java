@@ -35,7 +35,7 @@ public class Tarihce  extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_KELIME")
     @ForeignKey(name = "FK_TARIHCE_KELIME")
-    private Word kelime;
+    private Kelime kelime;
 
 
     public static long getSerialVersionUID() {
@@ -74,11 +74,11 @@ public class Tarihce  extends BaseEntity {
         this.ezberlendi = ezberlendi;
     }
 
-    public Word getKelime() {
+    public Kelime getKelime() {
         return kelime;
     }
 
-    public void setKelime(Word kelime) {
+    public void setKelime(Kelime kelime) {
         this.kelime = kelime;
     }
 
