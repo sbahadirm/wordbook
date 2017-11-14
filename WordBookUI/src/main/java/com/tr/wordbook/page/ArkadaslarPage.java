@@ -5,6 +5,7 @@ import com.tr.wordbook.domain.Kullanici;
 import com.tr.wordbook.domain.KullaniciArkadas;
 import com.tr.wordbook.service.entityservice.KullaniciArkadasEntityService;
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class ArkadaslarPage extends VerticalLayout {
 
     private Button araButton;
 
-    private Grid<KullaniciArkadas> grid = new Grid<>(KullaniciArkadas.class);
+    private Grid<KullaniciArkadas> grid;
 
     private List<KullaniciArkadas> allKullaniciArkadasList;
     private KullaniciArkadasEntityService kullaniciArkadasEntityService;
@@ -39,16 +40,39 @@ public class ArkadaslarPage extends VerticalLayout {
     private void initFieldsPanel() {
 
         VerticalLayout layout = new VerticalLayout();
-        HorizontalLayout layout1 = new HorizontalLayout();
-        HorizontalLayout layout2 = new HorizontalLayout();
+        layout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
+
+        HorizontalLayout navigationLayout = new HorizontalLayout();
+        navigationLayout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
+        Button arkadasEkleButton = new Button();
+        arkadasEkleButton.setCaption("Arkadaş Ekle");
+        arkadasEkleButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        navigationLayout.addComponent(arkadasEkleButton);
+
+        Panel arkadaslarPanel = new Panel();
+        arkadaslarPanel.setWidth("100%");
+        arkadaslarPanel.setCaption("Arkadaşlar");
+        VerticalLayout arkadaslarPanelLayaot = new VerticalLayout();
+        arkadaslarPanelLayaot.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+        arkadaslarPanel.setContent(arkadaslarPanelLayaot);
+
+        HorizontalLayout filtreLayout = new HorizontalLayout();
+        filtreLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+        HorizontalLayout filtreButtonsLayout = new HorizontalLayout();
+        VerticalLayout gridLayout = new VerticalLayout();
+        gridLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
         adiField = new TextField();
         adiField.setCaption("Adı");
-        layout1.addComponent(adiField);
+        filtreLayout.addComponent(adiField);
 
         kullaniciAdiField = new TextField();
         kullaniciAdiField.setCaption("Kullanıcı Adı");
-        layout1.addComponent(kullaniciAdiField);
+        filtreLayout.addComponent(kullaniciAdiField);
+
+        grid = new Grid<>(KullaniciArkadas.class);
+        grid.setSizeFull();
+        gridLayout.addComponent(grid);
 
         araButton = new Button();
         araButton.setCaption("Ara");
@@ -58,24 +82,25 @@ public class ArkadaslarPage extends VerticalLayout {
                 fillTable();
             }
         });
-        layout2.addComponent(araButton);
+        filtreButtonsLayout.addComponent(araButton);
 
-        layout.addComponent(layout1);
-        layout.addComponent(layout2);
+        layout.addComponent(navigationLayout);
+        arkadaslarPanelLayaot.addComponent(filtreLayout);
+        arkadaslarPanelLayaot.addComponent(filtreButtonsLayout);
+        arkadaslarPanelLayaot.addComponent(gridLayout);
+
+        layout.addComponent(arkadaslarPanel);
 
         addComponent(layout);
+
     }
 
     private void fillTable(){
-
-        addComponent(grid);
 
         if (!allKullaniciArkadasList.isEmpty()){
 
             grid.setItems(allKullaniciArkadasList);
 
-        } else {
-            Notification.show("Tüm kelimeler ezberlenmiştir!", Notification.Type.ERROR_MESSAGE);
         }
     }
 

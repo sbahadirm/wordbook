@@ -38,7 +38,7 @@ public class WordBookUI extends UI {
     private VerticalLayout mainLayout = new VerticalLayout();
     private VerticalLayout lytWordList = new VerticalLayout();
     private Label lblHeader;
-    private HorizontalLayout headerLayout;
+    private VerticalLayout headerLayout;
     private HorizontalLayout navigationLayout;
     private VerticalLayout baslikLayout;
     private HorizontalLayout contentLayout;
@@ -152,20 +152,37 @@ public class WordBookUI extends UI {
 
     private void addHeader() {
 
-        headerLayout = new HorizontalLayout();
-        lblHeader = new Label("WORD BOOK");
-        lblHeader.addStyleName(ValoTheme.LABEL_H1);
-        lblHeader.setSizeUndefined();
-        headerLayout.addComponent(lblHeader);
-        headerLayout.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
+        headerLayout = new VerticalLayout();
+
+        HorizontalLayout headerLayout1 = new HorizontalLayout();
+        headerLayout1.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
+        headerLayout1.setSizeFull();
+
+        HorizontalLayout headerLayout2 = new HorizontalLayout();
+        headerLayout2.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        headerLayout2.setSizeFull();
+        headerLayout2.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent layoutClickEvent) {
                 ekraniTemizle();
             }
         });
 
-        mainLayout.addComponent(headerLayout);
+        Button signOutButton = new Button();
+        signOutButton.setCaption("Çıkış");
+        signOutButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        headerLayout1.addComponent(signOutButton);
 
+        lblHeader = new Label("WORD BOOK");
+        lblHeader.addStyleName(ValoTheme.LABEL_H1);
+        lblHeader.addStyleName(ValoTheme.LABEL_BOLD);
+        lblHeader.setSizeUndefined();
+        headerLayout2.addComponent(lblHeader);
+
+        headerLayout.addComponent(headerLayout1);
+        headerLayout.addComponent(headerLayout2);
+
+        mainLayout.addComponent(headerLayout);
     }
 
     private void addButtons(){
