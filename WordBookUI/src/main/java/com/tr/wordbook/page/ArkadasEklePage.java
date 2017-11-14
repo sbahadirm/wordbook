@@ -6,10 +6,12 @@ import com.tr.wordbook.domain.KullaniciArkadas;
 import com.tr.wordbook.service.entityservice.KullaniciArkadasEntityService;
 import com.tr.wordbook.service.entityservice.KullaniciEntityService;
 import com.vaadin.ui.*;
+import com.vaadin.ui.renderers.ButtonRenderer;
+import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Bahadır Memiş
@@ -70,10 +72,27 @@ public class ArkadasEklePage extends VerticalLayout {
         grid.setSizeFull();
         grid.getColumn("sifre").setHidden(true);
         grid.getColumn("sifreKriptolu").setHidden(true);
+        grid.setSelectionMode(Grid.SelectionMode.MULTI);
+
+        grid.addSelectionListener(event -> {
+            Set<Kullanici> selected = event.getAllSelectedItems();
+            Notification.show(selected.size() + " items selected");
+        });
+
+        Grid.Column ekleColumn = grid.addColumn(kullanici -> "Ekle",
+                new ButtonRenderer((ClickableRenderer.RendererClickListener) clickEvent -> {
+
+                    Kullanici arkadas = (Kullanici) clickEvent.getItem();
+                    arkadasEkle(arkadas);
+
+                }));
+        ekleColumn.setCaption("Ekle");
+
         gridLayout.addComponent(grid);
 
         araButton = new Button();
         araButton.setCaption("Ara");
+        araButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         araButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -92,16 +111,45 @@ public class ArkadasEklePage extends VerticalLayout {
 
     }
 
+    private void arkadasEkle(Kullanici arkadas) {
+        List<Kullanici> kullaniciList = getKullaniciListByFilters();
+
+        Kullanici currentKullanici = WordBookUI.getKullanici();
+
+        KullaniciArkadas kullaniciArkadas = new KullaniciArkadas();
+        kullaniciArkadas.setKullanici(currentKullanici);
+        kullaniciArkadas.setKullaniciArkadas(arkadas);
+        kullaniciArkadas.setArkadaslikTarihi(new Date());
+        kullaniciArkadas = kullaniciArkadasEntityService.save(kullaniciArkadas);
+        kullaniciList.remove(arkadas);
+        grid.setItems(kullaniciList);
+    }
+
     private void fillTable(){
 
-        String adiFieldValue = adiField.getValue();
-        String kullaniciAdiFieldValue = kullaniciAdiField.getValue();
-
-        List<Kullanici> kullaniciList = kullaniciEntityService.findKullaniciByKullaniciAdiAndAdi(kullaniciAdiFieldValue, adiFieldValue);
+        List<Kullanici> kullaniciList = getKullaniciListByFilters();
 
         if (!kullaniciList.isEmpty()){
             grid.setItems(kullaniciList);
         }
+    }
+
+    private List<Kullanici> getKullaniciListByFilters() {
+        String adiFieldValue = adiField.getValue();
+        String kullaniciAdiFieldValue = kullaniciAdiField.getValue();
+
+        List<Kullanici> kullaniciList = kullaniciEntityService.findAllKullaniciByKullaniciAdiAndAdi(kullaniciAdiFieldValue, adiFieldValue);
+        Kullanici currentKullanici = WordBookUI.getKullanici();
+        kullaniciList.remove(currentKullanici);
+
+        List<KullaniciArkadas> kullaniciArkadasList = kullaniciArkadasEntityService.findAllKullaniciArkadasByKullanici(currentKullanici);
+        Set<Kullanici> arkadasSet = new HashSet<>();
+        for (KullaniciArkadas kullaniciArkadas : kullaniciArkadasList) {
+            arkadasSet.add(kullaniciArkadas.getKullaniciArkadas());
+        }
+        kullaniciList.removeAll(arkadasSet);
+
+        return kullaniciList;
     }
 
 }

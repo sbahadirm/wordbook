@@ -53,4 +53,32 @@ public class KullaniciArkadas extends BaseEntity {
     public Long getId() {
         return this.id;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Kullanici getKullanici() {
+        return kullanici;
+    }
+
+    public void setKullanici(Kullanici kullanici) {
+        this.kullanici = kullanici;
+    }
+
+    public Kullanici getKullaniciArkadas() {
+        return kullaniciArkadas;
+    }
+
+    public void setKullaniciArkadas(Kullanici kullaniciArkadas) {
+        this.kullaniciArkadas = kullaniciArkadas;
+    }
+
+    public Date getArkadaslikTarihi() {
+        return arkadaslikTarihi;
+    }
+
+    public void setArkadaslikTarihi(Date arkadaslikTarihi) {
+        this.arkadaslikTarihi = arkadaslikTarihi;
+    }
 }

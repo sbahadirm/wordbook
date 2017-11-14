@@ -5,10 +5,14 @@ import com.tr.wordbook.domain.Kullanici;
 import com.tr.wordbook.domain.KullaniciArkadas;
 import com.tr.wordbook.service.entityservice.KullaniciArkadasEntityService;
 import com.vaadin.ui.*;
+import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Bahadır Memiş
@@ -76,12 +80,23 @@ public class ArkadaslarPage extends VerticalLayout {
         kullaniciAdiField.setCaption("Kullanıcı Adı");
         filtreLayout.addComponent(kullaniciAdiField);
 
-        grid = new Grid<>(KullaniciArkadas.class);
+        grid = new Grid<>();
         grid.setSizeFull();
+
+        Grid.Column<KullaniciArkadas, String> arkadasKullaniciAdiColumn = grid.addColumn(kullanici ->
+                kullanici.getKullaniciArkadas().getKullaniciAdi());
+        arkadasKullaniciAdiColumn.setCaption("Arkadas");
+
+        Grid.Column<KullaniciArkadas, Date> bornColumn = grid.addColumn(KullaniciArkadas::getArkadaslikTarihi,
+                new DateRenderer("%1$tB %1$te, %1$tY",
+                        Locale.ENGLISH));
+        bornColumn.setCaption("Arkadaslik Tarihi");
+
         gridLayout.addComponent(grid);
 
         araButton = new Button();
         araButton.setCaption("Ara");
+        araButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         araButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
