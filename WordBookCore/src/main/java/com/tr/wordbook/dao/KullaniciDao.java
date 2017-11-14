@@ -38,7 +38,7 @@ public class KullaniciDao extends BaseDao<Kullanici> {
         return (Kullanici) criteria.uniqueResult();
     }
 
-    public List<Kullanici> findKullaniciByKullaniciAdiAndAdi(String kullaniciAdi, String adi){
+    public List<Kullanici> findAllKullaniciByKullaniciAdiAndAdi(String kullaniciAdi, String adi){
 
         Criteria criteria = getCurrentSession().createCriteria(Kullanici.class);
 

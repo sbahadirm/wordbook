@@ -32,8 +32,8 @@ public class KullaniciEntityService extends BaseEntityService<Kullanici, Kullani
         return getDao().findKullaniciByKullaniciAdiAndSifre(kullaniciAdi, sifre);
     }
 
-    public List<Kullanici> findKullaniciByKullaniciAdiAndAdi(String kullaniciAdi, String adi){
-        return getDao().findKullaniciByKullaniciAdiAndAdi(kullaniciAdi, adi);
+    public List<Kullanici> findAllKullaniciByKullaniciAdiAndAdi(String kullaniciAdi, String adi){
+        return getDao().findAllKullaniciByKullaniciAdiAndAdi(kullaniciAdi, adi);
     }
 
 }
