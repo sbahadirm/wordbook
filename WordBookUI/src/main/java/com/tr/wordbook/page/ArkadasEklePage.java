@@ -4,6 +4,7 @@ import com.tr.wordbook.WordBookUI;
 import com.tr.wordbook.domain.Kullanici;
 import com.tr.wordbook.domain.KullaniciArkadas;
 import com.tr.wordbook.service.entityservice.KullaniciArkadasEntityService;
+import com.tr.wordbook.service.entityservice.KullaniciEntityService;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -15,21 +16,23 @@ import java.util.List;
  * @since 0.0.1
  */
 @Configurable
-public class ArkadaslarPage extends VerticalLayout {
+public class ArkadasEklePage extends VerticalLayout {
 
     private TextField adiField;
     private TextField kullaniciAdiField;
 
     private Button araButton;
 
-    private Grid<KullaniciArkadas> grid;
+    private Grid<Kullanici> grid;
 
     private List<KullaniciArkadas> allKullaniciArkadasList;
     private KullaniciArkadasEntityService kullaniciArkadasEntityService;
+    private KullaniciEntityService kullaniciEntityService;
 
-    public ArkadaslarPage(){
+    public ArkadasEklePage(){
         super();
         kullaniciArkadasEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KullaniciArkadasEntityService.class);
+        kullaniciEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KullaniciEntityService.class);
         initFieldsPanel();
         Kullanici kullanici = WordBookUI.getKullanici();
         allKullaniciArkadasList = kullaniciArkadasEntityService.findAllKullaniciArkadasByKullanici(kullanici);
@@ -41,19 +44,6 @@ public class ArkadaslarPage extends VerticalLayout {
 
         VerticalLayout layout = new VerticalLayout();
         layout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
-
-        HorizontalLayout navigationLayout = new HorizontalLayout();
-        navigationLayout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
-        Button arkadasEkleButton = new Button();
-        arkadasEkleButton.setCaption("Arkadaş Ekle");
-        arkadasEkleButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        arkadasEkleButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                openArkadasEklePage();
-            }
-        });
-        navigationLayout.addComponent(arkadasEkleButton);
 
         Panel arkadaslarPanel = new Panel();
         arkadaslarPanel.setWidth("100%");
@@ -76,8 +66,10 @@ public class ArkadaslarPage extends VerticalLayout {
         kullaniciAdiField.setCaption("Kullanıcı Adı");
         filtreLayout.addComponent(kullaniciAdiField);
 
-        grid = new Grid<>(KullaniciArkadas.class);
+        grid = new Grid<>(Kullanici.class);
         grid.setSizeFull();
+        grid.getColumn("sifre").setHidden(true);
+        grid.getColumn("sifreKriptolu").setHidden(true);
         gridLayout.addComponent(grid);
 
         araButton = new Button();
@@ -90,7 +82,6 @@ public class ArkadaslarPage extends VerticalLayout {
         });
         filtreButtonsLayout.addComponent(araButton);
 
-        layout.addComponent(navigationLayout);
         arkadaslarPanelLayaot.addComponent(filtreLayout);
         arkadaslarPanelLayaot.addComponent(filtreButtonsLayout);
         arkadaslarPanelLayaot.addComponent(gridLayout);
@@ -101,21 +92,15 @@ public class ArkadaslarPage extends VerticalLayout {
 
     }
 
-    private void openArkadasEklePage() {
-        removeAllComponents();
-
-        ArkadasEklePage arkadasEklePage = new ArkadasEklePage();
-        arkadasEklePage.setWidth("100%");
-
-        addComponent(arkadasEklePage);
-    }
-
     private void fillTable(){
 
-        if (!allKullaniciArkadasList.isEmpty()){
+        String adiFieldValue = adiField.getValue();
+        String kullaniciAdiFieldValue = kullaniciAdiField.getValue();
 
-            grid.setItems(allKullaniciArkadasList);
+        List<Kullanici> kullaniciList = kullaniciEntityService.findKullaniciByKullaniciAdiAndAdi(kullaniciAdiFieldValue, adiFieldValue);
 
+        if (!kullaniciList.isEmpty()){
+            grid.setItems(kullaniciList);
         }
     }
 

@@ -57,7 +57,7 @@ public class WordBookUI extends UI {
         initGiris();
     }
 
-    private void initGiris() {
+    public void initGiris() {
         setupLayout();
         addHeader();
 

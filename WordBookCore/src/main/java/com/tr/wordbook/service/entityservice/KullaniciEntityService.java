@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author Koray PEKER
  * @since 0.0.1
@@ -29,4 +31,9 @@ public class KullaniciEntityService extends BaseEntityService<Kullanici, Kullani
     public Kullanici findKullaniciByKullaniciAdiAndSifre(String kullaniciAdi, String sifre){
         return getDao().findKullaniciByKullaniciAdiAndSifre(kullaniciAdi, sifre);
     }
+
+    public List<Kullanici> findKullaniciByKullaniciAdiAndAdi(String kullaniciAdi, String adi){
+        return getDao().findKullaniciByKullaniciAdiAndAdi(kullaniciAdi, adi);
+    }
+
 }

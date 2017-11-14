@@ -37,28 +37,35 @@ public class KaydolPage extends VerticalLayout {
 
         MyVerticalLayout layout1 = new MyVerticalLayout();
 
+        Panel kaydolPanel = new Panel();
+        kaydolPanel.setWidth("30%");
+        kaydolPanel.setCaption("Kaydol");
+        VerticalLayout kaydolPanelLayout = new VerticalLayout();
+        kaydolPanelLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        kaydolPanel.setContent(kaydolPanelLayout);
+
         adiField = new TextField();
         adiField.setCaption("Adı");
-        layout1.addComponent(adiField);
+        kaydolPanelLayout.addComponent(adiField);
 
         soyadiField = new TextField();
         soyadiField.setCaption("Soyadı");
-        layout1.addComponent(soyadiField);
+        kaydolPanelLayout.addComponent(soyadiField);
 
         kullaniciAdiField = new TextField();
         kullaniciAdiField.setCaption("Kullanıcı Adı");
         kullaniciAdiField.setDescription("En az 5 karakter");
-        layout1.addComponent(kullaniciAdiField);
+        kaydolPanelLayout.addComponent(kullaniciAdiField);
 
         sifreField = new TextField();
         sifreField.setCaption("Şifre");
         sifreField.setDescription("En az 8 karakter olmalıdır.");
-        layout1.addComponent(sifreField);
+        kaydolPanelLayout.addComponent(sifreField);
 
         sifreTekrarField = new TextField();
         sifreTekrarField.setCaption("Şifre (Tekrar)");
         sifreTekrarField.setDescription("En az 8 karakter olmalıdır.");
-        layout1.addComponent(sifreTekrarField);
+        kaydolPanelLayout.addComponent(sifreTekrarField);
 
         Button buttonKaydet = new Button();
         buttonKaydet.setCaption("Kaydol");
@@ -68,7 +75,9 @@ public class KaydolPage extends VerticalLayout {
                 kaydol();
             }
         });
-        layout1.addComponent(buttonKaydet);
+        kaydolPanelLayout.addComponent(buttonKaydet);
+
+        layout1.addComponent(kaydolPanel);
 
         addComponent(layout1);
 
@@ -88,6 +97,7 @@ public class KaydolPage extends VerticalLayout {
                 kullanici.setSifre(Md5Service.getHash(getSifreField().getValue()));
                 kullanici.setSifreKriptolu(Md5Service.getHash(getSifreField().getValue()));
                 kullanici = kullaniciEntityService.save(kullanici);
+                Notification.show("Tebrikler. Kaydolma işlemi başarılı!", Notification.Type.HUMANIZED_MESSAGE);
             } else {
                 Notification.show("Kullanıcı zaten var!", Notification.Type.ERROR_MESSAGE);
             }
