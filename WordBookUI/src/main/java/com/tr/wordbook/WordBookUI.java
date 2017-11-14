@@ -54,6 +54,10 @@ public class WordBookUI extends UI {
     @Override
     protected void init(VaadinRequest vaadinRequest) {
 
+        initGiris();
+    }
+
+    private void initGiris() {
         setupLayout();
         addHeader();
 
@@ -146,6 +150,7 @@ public class WordBookUI extends UI {
     }
 
     private void setupLayout() {
+        mainLayout.removeAllComponents();
         mainLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         setContent(mainLayout);
     }
@@ -171,6 +176,14 @@ public class WordBookUI extends UI {
         Button signOutButton = new Button();
         signOutButton.setCaption("Çıkış");
         signOutButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        signOutButton.setVisible(kullanici != null);
+        signOutButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                kullanici = null;
+                initGiris();
+            }
+        });
         headerLayout1.addComponent(signOutButton);
 
         lblHeader = new Label("WORD BOOK");
