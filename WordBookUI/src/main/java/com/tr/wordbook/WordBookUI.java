@@ -159,22 +159,39 @@ public class WordBookUI extends UI {
 
         headerLayout = new VerticalLayout();
 
-        HorizontalLayout headerLayout1 = new HorizontalLayout();
-        headerLayout1.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
-        headerLayout1.setSizeFull();
+        HorizontalLayout sagUstNavigationLayout = new HorizontalLayout();
+        sagUstNavigationLayout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
 
-        HorizontalLayout headerLayout2 = new HorizontalLayout();
-        headerLayout2.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        headerLayout2.setSizeFull();
-        headerLayout2.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
+        HorizontalLayout ustNavigationLayout = new HorizontalLayout();
+        ustNavigationLayout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
+        ustNavigationLayout.setSizeFull();
+
+        HorizontalLayout headerLayout = new HorizontalLayout();
+        headerLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        headerLayout.setSizeFull();
+        headerLayout.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent layoutClickEvent) {
                 ekraniTemizle();
             }
         });
 
+        Button profilButton = new Button();
+        profilButton.setCaption("Profil");
+        profilButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        profilButton.setIcon(FontAwesome.USER);
+        profilButton.setVisible(kullanici != null);
+        profilButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                openProfilPage();
+            }
+        });
+        sagUstNavigationLayout.addComponent(profilButton);
+
         Button signOutButton = new Button();
         signOutButton.setCaption("Çıkış");
+        signOutButton.setIcon(FontAwesome.POWER_OFF);
         signOutButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         signOutButton.setVisible(kullanici != null);
         signOutButton.addClickListener(new Button.ClickListener() {
@@ -184,18 +201,24 @@ public class WordBookUI extends UI {
                 initGiris();
             }
         });
-        headerLayout1.addComponent(signOutButton);
+        sagUstNavigationLayout.addComponent(signOutButton);
+
+        ustNavigationLayout.addComponent(sagUstNavigationLayout);
 
         lblHeader = new Label("WORD BOOK");
         lblHeader.addStyleName(ValoTheme.LABEL_H1);
         lblHeader.addStyleName(ValoTheme.LABEL_BOLD);
         lblHeader.setSizeUndefined();
-        headerLayout2.addComponent(lblHeader);
+        headerLayout.addComponent(lblHeader);
 
-        headerLayout.addComponent(headerLayout1);
-        headerLayout.addComponent(headerLayout2);
+        this.headerLayout.addComponent(ustNavigationLayout);
+        this.headerLayout.addComponent(headerLayout);
 
-        mainLayout.addComponent(headerLayout);
+        mainLayout.addComponent(this.headerLayout);
+    }
+
+    private void openProfilPage() {
+
     }
 
     private void addButtons(){
