@@ -1,22 +1,24 @@
 package com.tr.wordbook;
 
 import com.tr.wordbook.domain.Kullanici;
-import com.tr.wordbook.enums.EnumSecimEH;
-import com.tr.wordbook.page.ArkadaslarPage;
-import com.tr.wordbook.page.KaydolPage;
-import com.tr.wordbook.page.KelimeEklePage;
-import com.tr.wordbook.page.KelimePage;
+import com.tr.wordbook.enums.EnumMenu;
+import com.tr.wordbook.page.*;
 import com.tr.wordbook.service.entityservice.KullaniciEntityService;
 import com.tr.wordbook.service.entityservice.KelimeEntityService;
 import com.vaadin.annotations.Theme;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.event.MouseEvents;
+import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+
+import java.io.File;
 
 /**
  * @author Koray PEKER
@@ -39,7 +41,7 @@ public class WordBookUI extends UI {
     private VerticalLayout lytWordList = new VerticalLayout();
     private Label lblHeader;
     private VerticalLayout headerLayout;
-    private HorizontalLayout navigationLayout;
+//    private HorizontalLayout navigationLayout;
     private VerticalLayout baslikLayout;
     private HorizontalLayout contentLayout;
 
@@ -61,13 +63,11 @@ public class WordBookUI extends UI {
         setupLayout();
         addHeader();
 
-        if (kullanici != null){
-
-            addButtons();
-
-        } else {
+        if (kullanici == null){
 
             addLoginLayout();
+//            addButtons();
+
         }
     }
 
@@ -142,7 +142,7 @@ public class WordBookUI extends UI {
         if (kullanici != null){
             mainLayout.removeAllComponents();
             addHeader();
-            addButtons();
+//            addButtons();
         } else {
             Notification.show("Kullanıcı Bulunamadı!", Notification.Type.ERROR_MESSAGE);
         }
@@ -161,6 +161,7 @@ public class WordBookUI extends UI {
 
         HorizontalLayout sagUstNavigationLayout = new HorizontalLayout();
         sagUstNavigationLayout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
+        sagUstNavigationLayout.setVisible(kullanici != null);
 
         HorizontalLayout ustNavigationLayout = new HorizontalLayout();
         ustNavigationLayout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
@@ -176,140 +177,206 @@ public class WordBookUI extends UI {
             }
         });
 
-        Button profilButton = new Button();
-        profilButton.setCaption("Profil");
-        profilButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        profilButton.setIcon(FontAwesome.USER);
-        profilButton.setVisible(kullanici != null);
-        profilButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                openProfilPage();
-            }
-        });
-        sagUstNavigationLayout.addComponent(profilButton);
+        // A feedback component
+        final Label selection = new Label("-");
 
-        Button signOutButton = new Button();
-        signOutButton.setCaption("Çıkış");
-        signOutButton.setIcon(FontAwesome.POWER_OFF);
-        signOutButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        signOutButton.setVisible(kullanici != null);
-        signOutButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                kullanici = null;
-                initGiris();
+        // Define a common menu command for all the menu items.
+        MenuBar.Command mycommand = new MenuBar.Command() {
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                openSelectedPage(selectedItem);
             }
-        });
-        sagUstNavigationLayout.addComponent(signOutButton);
+        };
+
+        MenuBar barmenu = new MenuBar();
+        sagUstNavigationLayout.addComponent(barmenu);
+
+        MenuBar.MenuItem kelimeler = barmenu.addItem(EnumMenu.KELIMELER.name(), null, null);
+
+        // Submenu
+        MenuBar.MenuItem kelimeEkle = kelimeler.addItem(EnumMenu.KELIME_EKLE.name(), null, mycommand);
+        kelimeEkle.setIcon(FontAwesome.PLUS);
+        MenuBar.MenuItem kategoriEkle = kelimeler.addItem(EnumMenu.KATEGORI_EKLE.name(), null, mycommand);
+        kategoriEkle.setIcon(FontAwesome.PLUS);
+
+        // Another top-level item
+        MenuBar.MenuItem calis = barmenu.addItem(EnumMenu.CALIS.name(), null, mycommand);
+        calis.setIcon(FontAwesome.PENCIL_SQUARE_O);
+
+        // Yet another top-level item
+        MenuBar.MenuItem profil = barmenu.addItem(EnumMenu.PROFIL.name(), null, null);
+
+        MenuBar.MenuItem profilim = profil.addItem(EnumMenu.PROFILIM.name(), null, mycommand);
+        profilim.setIcon(FontAwesome.USER);
+
+        MenuBar.MenuItem arkadaslar = profil.addItem(EnumMenu.ARKADASLAR.name(), null, mycommand);
+        arkadaslar.setIcon(FontAwesome.USER_PLUS);
+
+        MenuBar.MenuItem ayarlar = profil.addItem(EnumMenu.AYARLAR.name(), null, mycommand);
+        ayarlar.setIcon(FontAwesome.WRENCH);
+
+        MenuBar.MenuItem rapor = profil.addItem(EnumMenu.RAPOR.name(), null, mycommand);
+        rapor.setIcon(FontAwesome.PIE_CHART);
+
+        MenuBar.MenuItem cikis = profil.addItem(EnumMenu.CIKIS.name(), null, mycommand);
+        cikis.setIcon(FontAwesome.POWER_OFF);
+
 
         ustNavigationLayout.addComponent(sagUstNavigationLayout);
 
-        lblHeader = new Label("WORD BOOK");
-        lblHeader.addStyleName(ValoTheme.LABEL_H1);
-        lblHeader.addStyleName(ValoTheme.LABEL_BOLD);
-        lblHeader.setSizeUndefined();
-        headerLayout.addComponent(lblHeader);
+        String basepath = VaadinService.getCurrent()
+                .getBaseDirectory().getAbsolutePath();
 
+        FileResource resource = new FileResource(new File(basepath +
+                "/WEB-INF/images/image.png"));
+
+        Image image = new Image("", resource);
+        image.addStyleName(ValoTheme.LABEL_BOLD);
+        image.addClickListener(new MouseEvents.ClickListener() {
+            @Override
+            public void click(MouseEvents.ClickEvent clickEvent) {
+                ekraniTemizle();
+            }
+        });
+
+        headerLayout.addComponent(image);
         this.headerLayout.addComponent(ustNavigationLayout);
         this.headerLayout.addComponent(headerLayout);
 
         mainLayout.addComponent(this.headerLayout);
     }
 
+    private void openSelectedPage(MenuBar.MenuItem selectedItem) {
+
+        if (selectedItem.getText().equals(EnumMenu.KELIME_EKLE.name())){
+            kelimeEkle();
+        } else if (selectedItem.getText().equals(EnumMenu.KATEGORI_EKLE.name())){
+            openKategoriEklePage();
+        } else if (selectedItem.getText().equals(EnumMenu.CALIS.name())){
+            calis();
+        } else if (selectedItem.getText().equals(EnumMenu.PROFILIM.name())){
+            openProfilPage();
+        } else if (selectedItem.getText().equals(EnumMenu.AYARLAR.name())){
+            // ayarlar page
+        } else if (selectedItem.getText().equals(EnumMenu.RAPOR.name())){
+            // rapor page
+        } else if (selectedItem.getText().equals(EnumMenu.CIKIS.name())){
+            cikisYap();
+        } else if (selectedItem.getText().equals(EnumMenu.ARKADASLAR.name())){
+            openArkadaslarPage();
+        } else {
+
+        }
+
+    }
+
+    private void cikisYap() {
+        kullanici = null;
+        initGiris();
+    }
+
     private void openProfilPage() {
 
+        ProfilPage profilPage = new ProfilPage();
+        profilPage.setWidth("100%");
+
+        mainLayout.removeAllComponents();
+
+        mainLayout.addComponent(headerLayout);
+//        mainLayout.addComponent(navigationLayout);
+        mainLayout.addComponent(profilPage);
+
     }
 
-    private void addButtons(){
-
-        navigationLayout = new HorizontalLayout();
-        navigationLayout.setHeight("50px");
-
-        homePageButton = new Button();
-        homePageButton.setIcon(FontAwesome.HOME);
-        homePageButton.setCaption("Anasayfa");
-        homePageButton.setWidth("100%");
-        homePageButton.setHeight("100%");
-        homePageButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        homePageButton.addStyleName(ValoTheme.BUTTON_HUGE);
-        homePageButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                ekraniTemizle();
-            }
-        });
-        navigationLayout.addComponent(homePageButton);
-
-        kelimeEkleButton = new Button();
-        kelimeEkleButton.setIcon(FontAwesome.PLUS);
-        kelimeEkleButton.setCaption("Kelime Ekle");
-        kelimeEkleButton.setWidth("100%");
-        kelimeEkleButton.setHeight("100%");
-        kelimeEkleButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        kelimeEkleButton.addStyleName(ValoTheme.BUTTON_HUGE);
-        kelimeEkleButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                kelimeEkle();
-            }
-        });
-        navigationLayout.addComponent(kelimeEkleButton);
-
-        Button calisButton = new Button();
-        calisButton.setIcon(FontAwesome.PENCIL_SQUARE_O);
-        calisButton.setCaption("Çalış");
-        calisButton.setWidth("100%");
-        calisButton.setHeight("100%");
-        calisButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        calisButton.addStyleName(ValoTheme.BUTTON_HUGE);
-        calisButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                calis();
-            }
-        });
-        navigationLayout.addComponent(calisButton);
-
-        Button raporlaButton = new Button();
-        raporlaButton.setIcon(FontAwesome.PIE_CHART);
-        raporlaButton.setCaption("Rapor");
-        raporlaButton.setWidth("100%");
-        raporlaButton.setHeight("100%");
-        raporlaButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        raporlaButton.addStyleName(ValoTheme.BUTTON_HUGE);
-        navigationLayout.addComponent(raporlaButton);
-
-        Button arkadaslarButton = new Button();
-        arkadaslarButton.setIcon(FontAwesome.USERS);
-        arkadaslarButton.setCaption("Arkadaşlar");
-        arkadaslarButton.setWidth("100%");
-        arkadaslarButton.setHeight("100%");
-        arkadaslarButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        arkadaslarButton.addStyleName(ValoTheme.BUTTON_HUGE);
-        arkadaslarButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                openArkadaslarPage();
-            }
-        });
-        navigationLayout.addComponent(arkadaslarButton);
-
-        navigationLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        navigationLayout.setHeight("80px");
-
-        mainLayout.addComponent(navigationLayout);
-    }
+//    private void addButtons(){
+//
+//        navigationLayout = new HorizontalLayout();
+//        navigationLayout.setHeight("50px");
+//
+//        homePageButton = new Button();
+//        homePageButton.setIcon(FontAwesome.HOME);
+//        homePageButton.setCaption("Anasayfa");
+//        homePageButton.setWidth("100%");
+//        homePageButton.setHeight("100%");
+//        homePageButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+//        homePageButton.addStyleName(ValoTheme.BUTTON_HUGE);
+//        homePageButton.addClickListener(new Button.ClickListener() {
+//            @Override
+//            public void buttonClick(Button.ClickEvent clickEvent) {
+//                ekraniTemizle();
+//            }
+//        });
+//        navigationLayout.addComponent(homePageButton);
+//
+//        kelimeEkleButton = new Button();
+//        kelimeEkleButton.setIcon(FontAwesome.PLUS);
+//        kelimeEkleButton.setCaption("Kelime Ekle");
+//        kelimeEkleButton.setWidth("100%");
+//        kelimeEkleButton.setHeight("100%");
+//        kelimeEkleButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+//        kelimeEkleButton.addStyleName(ValoTheme.BUTTON_HUGE);
+//        kelimeEkleButton.addClickListener(new Button.ClickListener() {
+//            @Override
+//            public void buttonClick(Button.ClickEvent clickEvent) {
+//                kelimeEkle();
+//            }
+//        });
+//        navigationLayout.addComponent(kelimeEkleButton);
+//
+//        Button calisButton = new Button();
+//        calisButton.setIcon(FontAwesome.PENCIL_SQUARE_O);
+//        calisButton.setCaption("Çalış");
+//        calisButton.setWidth("100%");
+//        calisButton.setHeight("100%");
+//        calisButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+//        calisButton.addStyleName(ValoTheme.BUTTON_HUGE);
+//        calisButton.addClickListener(new Button.ClickListener() {
+//            @Override
+//            public void buttonClick(Button.ClickEvent clickEvent) {
+//                calis();
+//            }
+//        });
+//        navigationLayout.addComponent(calisButton);
+//
+//        Button raporlaButton = new Button();
+//        raporlaButton.setIcon(FontAwesome.PIE_CHART);
+//        raporlaButton.setCaption("Rapor");
+//        raporlaButton.setWidth("100%");
+//        raporlaButton.setHeight("100%");
+//        raporlaButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+//        raporlaButton.addStyleName(ValoTheme.BUTTON_HUGE);
+//        navigationLayout.addComponent(raporlaButton);
+//
+//        Button arkadaslarButton = new Button();
+//        arkadaslarButton.setIcon(FontAwesome.USERS);
+//        arkadaslarButton.setCaption("Arkadaşlar");
+//        arkadaslarButton.setWidth("100%");
+//        arkadaslarButton.setHeight("100%");
+//        arkadaslarButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+//        arkadaslarButton.addStyleName(ValoTheme.BUTTON_HUGE);
+//        arkadaslarButton.addClickListener(new Button.ClickListener() {
+//            @Override
+//            public void buttonClick(Button.ClickEvent clickEvent) {
+//                openArkadaslarPage();
+//            }
+//        });
+//        navigationLayout.addComponent(arkadaslarButton);
+//
+//        navigationLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+//        navigationLayout.setHeight("80px");
+//
+//        mainLayout.addComponent(navigationLayout);
+//    }
 
     private void openArkadaslarPage() {
 
         ArkadaslarPage arkadaslarPage = new ArkadaslarPage();
         arkadaslarPage.setWidth("100%");
+        arkadaslarPage.setMargin(false);
 
         mainLayout.removeAllComponents();
 
         mainLayout.addComponent(headerLayout);
-        mainLayout.addComponent(navigationLayout);
+//        mainLayout.addComponent(navigationLayout);
         mainLayout.addComponent(arkadaslarPage);
     }
 
@@ -321,7 +388,7 @@ public class WordBookUI extends UI {
         mainLayout.removeAllComponents();
 
         mainLayout.addComponent(headerLayout);
-        mainLayout.addComponent(navigationLayout);
+//        mainLayout.addComponent(navigationLayout);
         mainLayout.addComponent(kelimeEklePage);
 
     }
@@ -332,7 +399,7 @@ public class WordBookUI extends UI {
         mainLayout.removeAllComponents();
 
         mainLayout.addComponent(headerLayout);
-        mainLayout.addComponent(navigationLayout);
+//        mainLayout.addComponent(navigationLayout);
         mainLayout.addComponent(kelimePage);
     }
 
@@ -342,12 +409,16 @@ public class WordBookUI extends UI {
         if (kullanici != null){
 
             mainLayout.addComponent(headerLayout);
-            mainLayout.addComponent(navigationLayout);
+//            mainLayout.addComponent(navigationLayout);
         } else {
             setupLayout();
             addHeader();
             addLoginLayout();
         }
+
+    }
+
+    private void openKategoriEklePage() {
 
     }
 

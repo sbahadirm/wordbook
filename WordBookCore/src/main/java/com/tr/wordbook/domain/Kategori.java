@@ -1,5 +1,6 @@
 package com.tr.wordbook.domain;
 
+import com.tr.wordbook.enums.EnumSecimEH;
 import com.tr.wordbook.standart.BaseEntity;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -23,6 +24,10 @@ public class Kategori extends BaseEntity {
     @Size(max = 50)
     @Column(length = 50)
     private String adi;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 30)
+    private EnumSecimEH paylasimaAcik;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
