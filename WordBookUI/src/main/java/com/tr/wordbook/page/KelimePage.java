@@ -1,19 +1,18 @@
 package com.tr.wordbook.page;
 
 import com.tr.wordbook.WordBookUI;
-import com.tr.wordbook.domain.Kelime;
 import com.tr.wordbook.domain.KelimeKullanici;
 import com.tr.wordbook.domain.Kullanici;
 import com.tr.wordbook.enums.EnumSecimEH;
-import com.tr.wordbook.service.entityservice.KelimeEntityService;
 import com.tr.wordbook.service.entityservice.KelimeKullaniciEntityService;
+import com.vaadin.data.HasValue;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * @author Bahadır Memiş
@@ -22,135 +21,235 @@ import java.util.List;
 @Configurable
 public class KelimePage extends VerticalLayout {
 
-    private Label kelimeField;
-//    private Button ileriButton;
-//    private Button geriButton;
+    private Button kelimeFieldButton;
+    private Button ileriButton;
+    private Button geriButton;
     private Button ilerleButton;
+    private Kullanici kullanici;
+    private CheckBox ezberlenenlerGelsin;
 
     private KelimeKullanici selectedKelimeKullanici;
     private List<KelimeKullanici> allKelimeKullaniciList;
+    private ListIterator<KelimeKullanici> listIterator;
     private KelimeKullaniciEntityService kelimeKullaniciEntityService;
 
     public KelimePage(){
         super();
 
-        Kullanici kullanici = WordBookUI.getKullanici();
+        this.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+
+        kullanici = WordBookUI.getKullanici();
 
         kelimeKullaniciEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KelimeKullaniciEntityService.class);
         initFieldsPanel();
         allKelimeKullaniciList = kelimeKullaniciEntityService.findAllKelimeKullaniciByNotEzberlendiAndKullanici(EnumSecimEH.EVET, kullanici);
+        listIterator = allKelimeKullaniciList.listIterator();
         getNextKelime();
     }
 
-    public KelimePage(List<KelimeKullanici> allKelimeKullaniciList){
-        super();
-        kelimeKullaniciEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KelimeKullaniciEntityService.class);
-        setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        initFieldsPanel();
-        if (allKelimeKullaniciList != null){
-            this.allKelimeKullaniciList = allKelimeKullaniciList;
+    private void initFieldsPanel(){
+        addComponent(initTercihLayout());
+        addComponent(initFieldsLayout());
+    }
+
+    private Panel initTercihLayout() {
+
+        Panel panel = new Panel();
+        panel.setWidth("800px");
+        panel.setHeight("30px");
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        panel.setContent(horizontalLayout);
+        horizontalLayout.setSizeFull();
+
+        ezberlenenlerGelsin = new CheckBox();
+        ezberlenenlerGelsin.setCaption("Ezberlenenler Gelsin");
+        ezberlenenlerGelsin.setValue(Boolean.FALSE);
+        ezberlenenlerGelsin.addValueChangeListener(new HasValue.ValueChangeListener<Boolean>() {
+            @Override
+            public void valueChange(HasValue.ValueChangeEvent<Boolean> event) {
+                Boolean eventValue = event.getValue();
+                fillScreenByEzberlenenlerGelsin(eventValue);
+            }
+        });
+        horizontalLayout.addComponent(ezberlenenlerGelsin);
+
+        return panel;
+    }
+
+    private void fillScreenByEzberlenenlerGelsin(Boolean eventValue) {
+
+        if (Boolean.TRUE.equals(eventValue)){
+            allKelimeKullaniciList = kelimeKullaniciEntityService.findAllKelimeKullaniciByKullanici(kullanici);
+            listIterator = allKelimeKullaniciList.listIterator();
         } else {
-            this.allKelimeKullaniciList = new ArrayList<>();
+            allKelimeKullaniciList = kelimeKullaniciEntityService.findAllKelimeKullaniciByNotEzberlendiAndKullanici(EnumSecimEH.EVET, kullanici);
+            listIterator = allKelimeKullaniciList.listIterator();
         }
 
         getNextKelime();
     }
 
+    private Panel initFieldsLayout() {
 
-    private void initFieldsPanel(){
+        Panel panel = new Panel();
+        panel.setWidth("800px");
+        panel.setHeight("300px");
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        panel.setContent(horizontalLayout);
+        horizontalLayout.setSizeFull();
 
-//        geriButton = new Button();
-//        geriButton.setIcon(FontAwesome.BACKWARD);
-//        geriButton.setCaption("");
-//        layout1.addComponent(geriButton);
+        VerticalLayout solMenuPanelLayout = new VerticalLayout();
+        solMenuPanelLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
-        kelimeField = new Label();
-        kelimeField.setWidth("100%");
-        kelimeField.setHeight("100%");
-        kelimeField.addStyleName(ValoTheme.TEXTFIELD_ALIGN_CENTER);
-        kelimeField.addStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
-        kelimeField.addStyleName(ValoTheme.LABEL_H1);
-        addComponent(kelimeField);
+        VerticalLayout ortaMenuPanelLayout = new VerticalLayout();
+        ortaMenuPanelLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+
+        VerticalLayout sagMenuPanelLayout = new VerticalLayout();
+        sagMenuPanelLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+
+        geriButton = new Button();
+        geriButton.setIcon(FontAwesome.BACKWARD);
+        geriButton.setCaption("");
+        geriButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                getPreviousKelime();
+            }
+        });
+        solMenuPanelLayout.addComponent(geriButton);
+
+        kelimeFieldButton = new Button();
+        kelimeFieldButton.setWidth("100%");
+        kelimeFieldButton.setHeight("100%");
+        kelimeFieldButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+        kelimeFieldButton.addStyleName(ValoTheme.BUTTON_HUGE);
+        kelimeFieldButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                dilDegistir();
+            }
+        });
+        ortaMenuPanelLayout.addComponent(kelimeFieldButton);
 
         ilerleButton = new Button();
-        ilerleButton.setIcon(FontAwesome.HAND_O_RIGHT);
-        ilerleButton.setCaption("");
+        ilerleButton.setIcon(FontAwesome.THUMBS_UP);
+        ilerleButton.setCaption("EZBERLENDİ");
         ilerleButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                ilerle();
+                ezberlendi();
             }
         });
-        addComponent(ilerleButton);
+        ortaMenuPanelLayout.addComponent(ilerleButton);
 
+        ileriButton = new Button();
+        ileriButton.setIcon(FontAwesome.FORWARD);
+        ileriButton.setCaption("");
+        ileriButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                getNextKelime();
+            }
+        });
+        sagMenuPanelLayout.addComponent(ileriButton);
+
+        horizontalLayout.addComponent(solMenuPanelLayout);
+        horizontalLayout.addComponent(ortaMenuPanelLayout);
+        horizontalLayout.addComponent(sagMenuPanelLayout);
+
+        return panel;
     }
 
-    private void ilerle(){
+    private VerticalLayout initVerticalPanel() {
 
-        if (FontAwesome.THUMBS_UP.equals(ilerleButton.getIcon())){
-            ezberlendi();
-        } else {
-            turkcesiniGetir();
-        }
+        Panel Panel = new Panel();
+        Panel.setWidth("150px");
+        Panel.setHeight("300px");
+        VerticalLayout layout = new VerticalLayout();
+        layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        Panel.setContent(layout);
+
+        return layout;
+    }
+
+    private HorizontalLayout initHorizontalPanel() {
+
+        Panel Panel = new Panel();
+        Panel.setWidth("150px");
+        Panel.setHeight("300px");
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        Panel.setContent(layout);
+
+        return layout;
     }
 
     private void ezberlendi() {
-        ilerleButton.setIcon(FontAwesome.HAND_O_RIGHT);
 
         selectedKelimeKullanici.setEzberlendi(EnumSecimEH.EVET);
         if (kelimeKullaniciEntityService != null){
             selectedKelimeKullanici = kelimeKullaniciEntityService.save(selectedKelimeKullanici);
         }
 
-        allKelimeKullaniciList.remove(selectedKelimeKullanici);
-
         getNextKelime();
     }
 
-    private void turkcesiniGetir() {
-        ilerleButton.setIcon(FontAwesome.THUMBS_UP);
-        kelimeField.setValue(selectedKelimeKullanici.getKelime().getTurkce().toUpperCase());
-    }
+    private void dilDegistir(){
 
-//    private void ileri(){
-//        Long id = selectedKelime.getId();
-//        wordBookEntityService.findById(id + 1L)
-//    }
-
-//    private void geri(){
-//
-//    }
-
-//    private void kaydol(){
-//
-//        if (getSifreField().getValue().equals(getSifreTekrarField().getValue())){
-//
-//            Kullanici user = kullaniciEntityService.findKullaniciByKullaniciAdi(getKullaniciAdiField().getValue());
-//
-//            if (user == null){
-//                Kullanici kullanici = new Kullanici();
-//                kullanici.setAdi(getKelimeField().getValue());
-//                kullanici.setSoyadi(getSoyadiField().getValue());
-//                kullanici.setKullaniciAdi(getKullaniciAdiField().getValue());
-//                kullanici.setSifre(Md5Service.getHash(getSifreField().getValue()));
-//                kullanici.setSifreKriptolu(Md5Service.getHash(getSifreField().getValue()));
-//                kullanici = kullaniciEntityService.save(kullanici);
-//            } else {
-//                Notification.show("Kullanıcı zaten var!", Notification.Type.ERROR_MESSAGE);
-//            }
-//        } else {
-//            Notification.show("Şifreler uyumsuz!", Notification.Type.ERROR_MESSAGE);
-//        }
-//    }
-
-    private void getNextKelime(){
-
-        if (!allKelimeKullaniciList.isEmpty()){
-            selectedKelimeKullanici = allKelimeKullaniciList.get(0);
-            kelimeField.setValue(selectedKelimeKullanici.getKelime().getIngilizce().toUpperCase());
+        if (selectedKelimeKullanici.getKelime().getTurkce().toUpperCase().equals(kelimeFieldButton.getCaption())){
+            ingilizcesiniGetir();
         } else {
-            Notification.show("Tüm kelimeler ezberlenmiştir!", Notification.Type.ERROR_MESSAGE);
+            turkcesiniGetir();
         }
     }
 
+    private void turkcesiniGetir() {
+        kelimeFieldButton.setCaption(selectedKelimeKullanici.getKelime().getTurkce().toUpperCase());
+    }
+
+    private void ingilizcesiniGetir() {
+        kelimeFieldButton.setCaption(selectedKelimeKullanici.getKelime().getIngilizce().toUpperCase());
+    }
+
+    private void getNextKelime() {
+
+        validateList();
+
+        if (listIterator.hasNext()) {
+            selectedKelimeKullanici = listIterator.next();
+            kelimeFieldButton.setCaption(selectedKelimeKullanici.getKelime().getIngilizce().toUpperCase());
+        } else {
+            Notification.show("Listenin sonundasınız. İleri gidilemez!", Notification.Type.ERROR_MESSAGE);
+        }
+
+    }
+
+    private void getPreviousKelime() {
+
+        validateList();
+
+        if (listIterator.hasPrevious()) {
+            selectedKelimeKullanici = listIterator.previous();
+            kelimeFieldButton.setCaption(selectedKelimeKullanici.getKelime().getIngilizce().toUpperCase());
+        } else {
+
+            Notification.show("Listenin başındasınız. Geri gidilemez!", Notification.Type.ERROR_MESSAGE);
+        }
+    }
+
+    private void validateList() {
+
+        if (allKelimeKullaniciList.isEmpty()){
+
+            Boolean isEzberlenenlerGelsin = ezberlenenlerGelsin.getValue();
+
+            String notificationValue = "Tüm kelimeler ezberlenmiştir!";
+            if (isEzberlenenlerGelsin){
+                notificationValue = "Kelime bulunamadı! Kelime ekleyiniz.";
+            }
+            Notification.show(notificationValue, Notification.Type.ERROR_MESSAGE);
+        }
+    }
 }

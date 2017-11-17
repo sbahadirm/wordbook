@@ -142,6 +142,7 @@ public class WordBookUI extends UI {
         if (kullanici != null){
             mainLayout.removeAllComponents();
             addHeader();
+            calis();
 //            addButtons();
         } else {
             Notification.show("Kullanıcı Bulunamadı!", Notification.Type.ERROR_MESSAGE);
