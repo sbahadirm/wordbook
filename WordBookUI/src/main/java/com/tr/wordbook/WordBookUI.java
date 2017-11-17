@@ -228,7 +228,7 @@ public class WordBookUI extends UI {
                 .getBaseDirectory().getAbsolutePath();
 
         FileResource resource = new FileResource(new File(basepath +
-                "/WEB-INF/images/image.png"));
+                "/WEB-INF/image.png"));
 
         Image image = new Image("", resource);
         image.addStyleName(ValoTheme.LABEL_BOLD);
