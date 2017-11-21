@@ -38,13 +38,15 @@ public class KelimePage extends VerticalLayout {
 
         this.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
-        kullanici = WordBookUI.getKullanici();
+        kullanici = WordBookUI.get().getKullanici();
 
         kelimeKullaniciEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KelimeKullaniciEntityService.class);
-        initFieldsPanel();
         allKelimeKullaniciList = kelimeKullaniciEntityService.findAllKelimeKullaniciByNotEzberlendiAndKullanici(EnumSecimEH.EVET, kullanici);
-        listIterator = allKelimeKullaniciList.listIterator();
-        getNextKelime();
+        if (!allKelimeKullaniciList.isEmpty()){
+            initFieldsPanel();
+            listIterator = allKelimeKullaniciList.listIterator();
+            getNextKelime();
+        }
     }
 
     private void initFieldsPanel(){

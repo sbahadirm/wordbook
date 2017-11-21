@@ -48,7 +48,7 @@ public class WordBookUI extends UI {
     private TextField usernameField;
     private PasswordField passwordField;
 
-    private static Kullanici kullanici;
+    private Kullanici kullanici;
 
     private Button kelimeEkleButton;
     private Button homePageButton;
@@ -63,6 +63,7 @@ public class WordBookUI extends UI {
         setupLayout();
         addHeader();
 
+        kullanici = (Kullanici) getSession().getAttribute("kullanici");
         if (kullanici == null){
 
             addLoginLayout();
@@ -140,6 +141,7 @@ public class WordBookUI extends UI {
         }
 
         if (kullanici != null){
+            getSession().setAttribute("kullanici", kullanici);
             mainLayout.removeAllComponents();
             addHeader();
             calis();
@@ -272,6 +274,7 @@ public class WordBookUI extends UI {
 
     private void cikisYap() {
         kullanici = null;
+        getSession().setAttribute("kullanici", null);
         initGiris();
     }
 
@@ -427,7 +430,11 @@ public class WordBookUI extends UI {
         return applicationContext;
     }
 
-    public static Kullanici getKullanici(){
+    public Kullanici getKullanici(){
         return kullanici;
+    }
+
+    public static WordBookUI get() {
+        return (WordBookUI) getCurrent();
     }
 }

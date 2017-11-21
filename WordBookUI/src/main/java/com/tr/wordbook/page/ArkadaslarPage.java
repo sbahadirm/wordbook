@@ -35,7 +35,7 @@ public class ArkadaslarPage extends VerticalLayout {
         super();
         kullaniciArkadasEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KullaniciArkadasEntityService.class);
         initFieldsPanel();
-        Kullanici kullanici = WordBookUI.getKullanici();
+        Kullanici kullanici = WordBookUI.get().getKullanici();
         allKullaniciArkadasList = kullaniciArkadasEntityService.findAllKullaniciArkadasByKullanici(kullanici);
 //        fillTable();
 

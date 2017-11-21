@@ -36,7 +36,7 @@ public class ArkadasEklePage extends VerticalLayout {
         kullaniciArkadasEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KullaniciArkadasEntityService.class);
         kullaniciEntityService = ((WordBookUI) UI.getCurrent()).getApplicationContext().getBean(KullaniciEntityService.class);
         initFieldsPanel();
-        Kullanici kullanici = WordBookUI.getKullanici();
+        Kullanici kullanici = WordBookUI.get().getKullanici();
         allKullaniciArkadasList = kullaniciArkadasEntityService.findAllKullaniciArkadasByKullanici(kullanici);
 //        fillTable();
 
@@ -114,7 +114,7 @@ public class ArkadasEklePage extends VerticalLayout {
     private void arkadasEkle(Kullanici arkadas) {
         List<Kullanici> kullaniciList = getKullaniciListByFilters();
 
-        Kullanici currentKullanici = WordBookUI.getKullanici();
+        Kullanici currentKullanici = WordBookUI.get().getKullanici();
 
         KullaniciArkadas kullaniciArkadas = new KullaniciArkadas();
         kullaniciArkadas.setKullanici(currentKullanici);
@@ -139,7 +139,7 @@ public class ArkadasEklePage extends VerticalLayout {
         String kullaniciAdiFieldValue = kullaniciAdiField.getValue();
 
         List<Kullanici> kullaniciList = kullaniciEntityService.findAllKullaniciByKullaniciAdiAndAdi(kullaniciAdiFieldValue, adiFieldValue);
-        Kullanici currentKullanici = WordBookUI.getKullanici();
+        Kullanici currentKullanici = WordBookUI.get().getKullanici();
         kullaniciList.remove(currentKullanici);
 
         List<KullaniciArkadas> kullaniciArkadasList = kullaniciArkadasEntityService.findAllKullaniciArkadasByKullanici(currentKullanici);

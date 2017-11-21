@@ -147,7 +147,7 @@ public class KelimeEklePage extends HorizontalLayout {
 
         if (kelimeKullaniciEntityService != null){
 
-            Kullanici kullanici = WordBookUI.getKullanici();
+            Kullanici kullanici = WordBookUI.get().getKullanici();
 
             Kelime kelime = new Kelime();
             kelime.setTurkce(turkceField.getValue());
@@ -173,7 +173,7 @@ public class KelimeEklePage extends HorizontalLayout {
     private void fillList() {
 
         if (kelimeKullaniciEntityService != null){
-            Kullanici kullanici = WordBookUI.getKullanici();
+            Kullanici kullanici = WordBookUI.get().getKullanici();
             kelimeKullaniciList = kelimeKullaniciEntityService.findAllKelimeKullaniciByKullanici(kullanici);
         }
 
