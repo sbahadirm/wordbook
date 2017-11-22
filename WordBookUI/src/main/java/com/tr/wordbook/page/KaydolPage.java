@@ -20,8 +20,8 @@ public class KaydolPage extends VerticalLayout {
     private TextField adiField;
     private TextField soyadiField;
     private TextField kullaniciAdiField;
-    private TextField sifreField;
-    private TextField sifreTekrarField;
+    private PasswordField sifreField;
+    private PasswordField sifreTekrarField;
     private Button kaydolButton;
 
     public KaydolPage(){
@@ -30,8 +30,8 @@ public class KaydolPage extends VerticalLayout {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         initFieldsPanel();
+        addListeners();
     }
-
 
     private void initFieldsPanel(){
 
@@ -57,30 +57,34 @@ public class KaydolPage extends VerticalLayout {
         kullaniciAdiField.setDescription("En az 5 karakter");
         kaydolPanelLayout.addComponent(kullaniciAdiField);
 
-        sifreField = new TextField();
+        sifreField = new PasswordField();
         sifreField.setCaption("Şifre");
         sifreField.setDescription("En az 8 karakter olmalıdır.");
         kaydolPanelLayout.addComponent(sifreField);
 
-        sifreTekrarField = new TextField();
+        sifreTekrarField = new PasswordField();
         sifreTekrarField.setCaption("Şifre (Tekrar)");
         sifreTekrarField.setDescription("En az 8 karakter olmalıdır.");
         kaydolPanelLayout.addComponent(sifreTekrarField);
 
-        Button buttonKaydet = new Button();
-        buttonKaydet.setCaption("Kaydol");
-        buttonKaydet.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                kaydol();
-            }
-        });
-        kaydolPanelLayout.addComponent(buttonKaydet);
+        kaydolButton = new Button();
+        kaydolButton.setCaption("Kaydol");
+        kaydolPanelLayout.addComponent(kaydolButton);
 
         layout1.addComponent(kaydolPanel);
 
         addComponent(layout1);
 
+    }
+
+    private void addListeners() {
+
+        kaydolButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                kaydol();
+            }
+        });
     }
 
     private void kaydol(){
